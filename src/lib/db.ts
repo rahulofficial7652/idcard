@@ -3,14 +3,13 @@ import mongoose from "mongoose"
 export async function connect() {
     try {
         const connection = mongoose.connection
-     
        
         if(connection.readyState >=1) {
             console.log("MongoDB already connected");
             return;
         }
         
-         await mongoose.connect(process.env.MONGODB_URL!)
+         await mongoose.connect(process.env.MONGO_URL!)
             connection.on('connected', () => {
             console.log('MongoDB connect')
         })
@@ -22,6 +21,6 @@ export async function connect() {
         console.log('Database connected successfully')
         
     } catch (error) {
-        console.log('Something went wrong for Database connection')        
+        console.log(error, 'Something went wrong for Database connection')        
     }
 }
