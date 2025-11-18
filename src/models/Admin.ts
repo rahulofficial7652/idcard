@@ -1,28 +1,39 @@
-import mongoose from "mongoose";
+import mongoose, { Schema, models } from "mongoose";
 
-const AdminSchema = new mongoose.Schema ({
-    clerkId: { 
-        type: String,
-        required: true,
-        unique: true 
+const AdminSchema = new Schema(
+  {
+    clerkId: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    name:{
-        type: String,
-        required: true
+    name: {
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
-    role:{
-        type: String,
-        default: "admin"
+    role: {
+      type: String,
+      enum: ["admin", "superadmin"],
+      default: "admin",
     },
     invitedBy: {
-        type: String,
-        required: true
+      type: String,
+      default: "system",
     },
-}, {timestamps: true})
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.models.Admin || mongoose.model("Admin", AdminSchema);
+// ⚠️ IMPORTANT: Turbopack-safe export
+const Admin = models.Admin || mongoose.model("Admin", AdminSchema);
+
+export default Admin;
