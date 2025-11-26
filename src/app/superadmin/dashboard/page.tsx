@@ -19,7 +19,7 @@ export default async function SuperAdminDashboard() {
   ])
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Super Admin Dashboard</h1>
         <div className="text-sm text-muted-foreground">

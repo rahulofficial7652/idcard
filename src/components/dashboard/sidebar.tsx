@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { LayoutDashboard, Building2, FileText, CreditCard, Database, Settings } from "lucide-react"
 
-const sidebarItems = [
+export const sidebarItems = [
   {
     title: "Dashboard",
     href: "/admin/dashboard",
