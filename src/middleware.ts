@@ -1,18 +1,16 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { withAuth } from "next-auth/middleware"
 
-// PUBLIC ROUTES (jahan login required nahi)
-export default clerkMiddleware({
-  publicRoutes: [
-    "/",          // home
-    "/login",     // sign-in page
-    "/register",  // sign-up page
-  ],
-});
+export default withAuth({
+  callbacks: {
+    authorized: ({ token }) => !!token,
+  },
+})
 
 export const config = {
   matcher: [
-    "/((?!.+\\.[\\w]+$|_next).*)",
-    "/",
-    "/(api|trpc)(.*)",
-  ],
-};
+    "/admin/:path*", 
+    "/api/admin/:path*",
+    "/superadmin/:path*",
+    "/user/:path*"
+  ]
+}

@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+}
+
+enum RecordStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String?
+  role          UserRole  @default(USER)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relations
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  ownedOrgs      Organization[] @relation("OrgOwner")
+  createdSchemas FieldSchema[]
+  createdRecords Record[]
+  auditLogs      AuditLog[]
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  settings    Json?    // Global org settings
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ownerId     String
+  owner       User     @relation("OrgOwner", fields: [ownerId], references: [id])
+  
+  users       User[]
+  invites     Invite[]
+  schemas     FieldSchema[]
+  templates   Template[]
+  records     Record[]
+}
+
+model Invite {
+  id             String       @id @default(cuid())
+  email          String
+  role           UserRole
+  token          String       @unique
+  expiresAt      DateTime
+  status         InviteStatus @default(PENDING)
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([email])
+  @@index([token])
+}
+
+model FieldSchema {
+  id             String   @id @default(cuid())
+  name           String
+  jsonSchema     Json     // The actual schema definition
+  version        Int      @default(1)
+  isActive       Boolean  @default(true)
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  createdBy      String
+  creator        User     @relation(fields: [createdBy], references: [id])
+  
+  records        Record[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Template {
+  id             String   @id @default(cuid())
+  name           String
+  settingsJson   Json     // Visual settings (layout, colors, etc)
+  assets         Json?    // Associated assets like logos
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  records        Record[]
+  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Record {
+  id             String       @id @default(cuid())
+  dataJson       Json         // The collected data
+  status         RecordStatus @default(SUBMITTED)
+  
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  
+  schemaId       String
+  schema         FieldSchema  @relation(fields: [schemaId], references: [id])
+  
+  templateId     String?
+  template       Template?    @relation(fields: [templateId], references: [id])
+  
+  createdBy      String?
+  creator        User?        @relation(fields: [createdBy], references: [id])
+  
+  files          File[]
+  
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model File {
+  id        String   @id @default(cuid())
+  url       String
+  type      String
+  size      Int
+  metadata  Json?
+  
+  recordId  String
+  record    Record   @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  action      String
+  details     Json?
+  ipAddress   String?
+  userAgent   String?
+  
+  actorId     String
+  actor       User     @relation(fields: [actorId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
