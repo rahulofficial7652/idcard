@@ -146,10 +146,10 @@ export function TemplateDesigner({ template }: TemplateDesignerProps) {
         </div>
 
         <div className="lg:col-span-2 space-y-6">
-          <Card className="h-full bg-slate-100 flex items-center justify-center p-8">
+          <Card className="h-full bg-muted/40 flex items-center justify-center p-8">
             {/* Live Preview */}
             <div 
-              className="bg-white shadow-xl rounded-lg overflow-hidden relative transition-all duration-300"
+              className="bg-card shadow-xl rounded-lg overflow-hidden relative transition-all duration-300"
               style={{
                 width: settings.layout === "landscape" ? "500px" : "320px",
                 height: settings.layout === "landscape" ? "300px" : "480px",
@@ -159,7 +159,7 @@ export function TemplateDesigner({ template }: TemplateDesignerProps) {
             >
               <div className="p-6 space-y-4 text-center">
                 <div 
-                  className="w-24 h-24 rounded-full mx-auto bg-slate-200 border-4 border-white shadow-sm"
+                  className="w-24 h-24 rounded-full mx-auto bg-muted border-4 border-background shadow-sm"
                   style={{ borderColor: settings.primaryColor }}
                 />
                 <div>

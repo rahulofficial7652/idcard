@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import Link from "next/link"
+import { Navbar } from "@/components/landing/navbar"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -32,8 +34,30 @@ export default function LoginPage() {
         return
       }
 
+      // Fetch the session to get the user role
+      const sessionRes = await fetch("/api/auth/session")
+      const session = await sessionRes.json()
+
+      if (!session || !session.user) {
+        toast.error("Failed to retrieve session")
+        return
+      }
+
       toast.success("Logged in successfully")
-      router.push("/dashboard")
+
+      // Redirect based on role
+      switch (session.user.role) {
+        case "SUPER_ADMIN":
+          router.push("/superadmin/dashboard")
+          break
+        case "ADMIN":
+          router.push("/admin/dashboard")
+          break
+        default:
+          router.push("/dashboard")
+          break
+      }
+      
       router.refresh()
     } catch {
       toast.error("Something went wrong")
@@ -74,11 +98,17 @@ export default function LoginPage() {
             />
           </div>
         </CardContent>
-        <CardFooter>
-          <Button className="w-full" disabled={isLoading}>
+        <CardFooter className="flex flex-col gap-4 mt-3 lg:mt-5">
+          <Button className="w-full mt-3 lg:mt-5" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Sign In
           </Button>
+          <div className="text-center text-sm text-muted-foreground">
+              Don't have an account?{" "}
+              <Link href="/register" className="underline underline-offset-4 hover:text-primary">
+                Register
+              </Link>
+            </div>
         </CardFooter>
       </form>
     </Card>

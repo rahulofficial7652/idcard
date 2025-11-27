@@ -29,7 +29,7 @@ export default async function CollectDataPage({ params }: { params: Promise<{ sc
         <p className="text-muted-foreground">Fill out the form details below.</p>
       </div>
 
-      <div className="bg-white p-6 rounded-lg border shadow-sm">
+      <div className="bg-card p-6 rounded-lg border shadow-sm">
         <DynamicForm schema={schema} templates={templates} />
       </div>
     </div>

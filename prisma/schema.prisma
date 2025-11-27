@@ -7,6 +7,120 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id             String         @id @default(uuid())
+  name           String?
+  email          String         @unique
+  passwordHash   String?
+  role           UserRole       @default(USER)
+  image          String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  organizationId String?
+  auditLogs      AuditLog[]
+  createdSchemas FieldSchema[]
+  ownedOrgs      Organization[] @relation("OrgOwner")
+  createdRecords Record[]
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
+}
+
+model Organization {
+  id        String        @id @default(uuid())
+  name      String
+  settings  Json?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  ownerId   String
+  schemas   FieldSchema[]
+  invites   Invite[]
+  owner     User          @relation("OrgOwner", fields: [ownerId], references: [id])
+  records   Record[]
+  templates Template[]
+  users     User[]
+}
+
+model Invite {
+  id             String        @id @default(uuid())
+  email          String
+  role           UserRole
+  token          String        @unique
+  expiresAt      DateTime
+  status         InviteStatus  @default(PENDING)
+  organizationId String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+
+  @@index([email])
+  @@index([token])
+}
+
+model FieldSchema {
+  id             String       @id @default(uuid())
+  name           String
+  jsonSchema     Json
+  version        Int          @default(1)
+  isActive       Boolean      @default(true)
+  organizationId String
+  createdBy      String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  creator        User         @relation(fields: [createdBy], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  records        Record[]
+}
+
+model Template {
+  id             String       @id @default(uuid())
+  name           String
+  settingsJson   Json
+  assets         Json?
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  records        Record[]
+  organization   Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Record {
+  id             String       @id @default(uuid())
+  dataJson       Json
+  status         RecordStatus @default(SUBMITTED)
+  organizationId String
+  schemaId       String
+  templateId     String?
+  createdBy      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  files          File[]
+  creator        User?        @relation(fields: [createdBy], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  schema         FieldSchema  @relation(fields: [schemaId], references: [id])
+  template       Template?    @relation(fields: [templateId], references: [id])
+}
+
+model File {
+  id        String   @id @default(uuid())
+  url       String
+  type      String
+  size      Int
+  metadata  Json?
+  recordId  String
+  createdAt DateTime @default(now())
+  record    Record   @relation(fields: [recordId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   Json?
+  ipAddress String?
+  userAgent String?
+  actorId   String
+  createdAt DateTime @default(now())
+  actor     User     @relation(fields: [actorId], references: [id])
+}
+
 enum UserRole {
   SUPER_ADMIN
   ADMIN
@@ -25,142 +139,4 @@ enum RecordStatus {
   APPROVED
   REJECTED
   ARCHIVED
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  passwordHash  String?
-  role          UserRole  @default(USER)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  
-  // Relations
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  
-  ownedOrgs      Organization[] @relation("OrgOwner")
-  createdSchemas FieldSchema[]
-  createdRecords Record[]
-  auditLogs      AuditLog[]
-}
-
-model Organization {
-  id          String   @id @default(cuid())
-  name        String
-  settings    Json?    // Global org settings
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relations
-  ownerId     String
-  owner       User     @relation("OrgOwner", fields: [ownerId], references: [id])
-  
-  users       User[]
-  invites     Invite[]
-  schemas     FieldSchema[]
-  templates   Template[]
-  records     Record[]
-}
-
-model Invite {
-  id             String       @id @default(cuid())
-  email          String
-  role           UserRole
-  token          String       @unique
-  expiresAt      DateTime
-  status         InviteStatus @default(PENDING)
-  organizationId String?
-  organization   Organization? @relation(fields: [organizationId], references: [id])
-  
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-
-  @@index([email])
-  @@index([token])
-}
-
-model FieldSchema {
-  id             String   @id @default(cuid())
-  name           String
-  jsonSchema     Json     // The actual schema definition
-  version        Int      @default(1)
-  isActive       Boolean  @default(true)
-  
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  
-  createdBy      String
-  creator        User     @relation(fields: [createdBy], references: [id])
-  
-  records        Record[]
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model Template {
-  id             String   @id @default(cuid())
-  name           String
-  settingsJson   Json     // Visual settings (layout, colors, etc)
-  assets         Json?    // Associated assets like logos
-  
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  
-  records        Record[]
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-
-model Record {
-  id             String       @id @default(cuid())
-  dataJson       Json         // The collected data
-  status         RecordStatus @default(SUBMITTED)
-  
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  
-  schemaId       String
-  schema         FieldSchema  @relation(fields: [schemaId], references: [id])
-  
-  templateId     String?
-  template       Template?    @relation(fields: [templateId], references: [id])
-  
-  createdBy      String?
-  creator        User?        @relation(fields: [createdBy], references: [id])
-  
-  files          File[]
-  
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-}
-
-model File {
-  id        String   @id @default(cuid())
-  url       String
-  type      String
-  size      Int
-  metadata  Json?
-  
-  recordId  String
-  record    Record   @relation(fields: [recordId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime @default(now())
-}
-
-model AuditLog {
-  id          String   @id @default(cuid())
-  action      String
-  details     Json?
-  ipAddress   String?
-  userAgent   String?
-  
-  actorId     String
-  actor       User     @relation(fields: [actorId], references: [id])
-  
-  createdAt   DateTime @default(now())
 }

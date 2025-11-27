@@ -26,7 +26,7 @@ export default async function NewRecordPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {schemas.map((schema) => (
-          <Card key={schema.id} className="hover:bg-slate-50 transition-colors">
+          <Card key={schema.id} className="hover:bg-muted/50 transition-colors">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
