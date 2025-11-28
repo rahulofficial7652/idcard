@@ -1,9 +1,9 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { UserRole } from "@prisma/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, Building2, FileText, CreditCard } from "lucide-react";
+import { StatsCard } from "@/components/dashboard/StatsCard";
+import { OverviewBarChart } from "@/components/dashboard/Charts";
+import { Users, FileText, CreditCard, CheckCircle } from "lucide-react";
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
@@ -23,52 +23,61 @@ export default async function Dashboard() {
     prisma.record.count({ where: whereOrg }),
   ]);
 
+  // Mock data for charts
+  const recordActivity = [
+    { name: "Mon", total: 12 },
+    { name: "Tue", total: 18 },
+    { name: "Wed", total: 15 },
+    { name: "Thu", total: 25 },
+    { name: "Fri", total: 32 },
+    { name: "Sat", total: 10 },
+    { name: "Sun", total: 5 },
+  ];
+
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
+      <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <div className="text-sm text-muted-foreground">
-          Welcome back, {session.user.name}
-        </div>
+        <p className="text-muted-foreground">
+          Welcome back, {session.user.name}. Here's what's happening in your organization.
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{userCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Schemas</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{schemaCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Templates</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{templateCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Records Collected</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{recordCount}</div>
-          </CardContent>
-        </Card>
+        <StatsCard
+          title="Total Employees"
+          value={userCount.toString()}
+          icon={Users}
+          description="Active team members"
+        />
+        <StatsCard
+          title="ID Templates"
+          value={templateCount.toString()}
+          icon={FileText}
+          description="Available templates"
+        />
+        <StatsCard
+          title="Cards Issued"
+          value={recordCount.toString()}
+          icon={CreditCard}
+          description="Total ID cards generated"
+          trend={{ value: 12, label: "this week", positive: true }}
+        />
+        <StatsCard
+          title="Active Schemas"
+          value={schemaCount.toString()}
+          icon={CheckCircle}
+          description="Data structures"
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-2">
+        <OverviewBarChart 
+          title="Cards Issued This Week" 
+          data={recordActivity} 
+          className="col-span-1" 
+        />
+        {/* Add another chart or widget here */}
       </div>
     </div>
   );

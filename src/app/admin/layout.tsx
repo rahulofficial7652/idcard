@@ -1,16 +1,18 @@
-import { Sidebar } from "@/components/dashboard/sidebar"
-import { Header } from "@/components/dashboard/header"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
+import { redirect } from "next/navigation"
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const session = await getServerSession(authOptions)
+
+  if (!session?.user) {
+    redirect("/login")
+  }
+
   return (
-    <div className="flex min-h-screen bg-muted/20">
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
-        <Header />
-        <main className="flex-1 p-4 md:p-6 overflow-y-auto">
-          {children}
-        </main>
-      </div>
-    </div>
+    <DashboardLayout role="ADMIN" user={session.user}>
+      {children}
+    </DashboardLayout>
   )
 }

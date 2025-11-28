@@ -5,57 +5,47 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 
 const schemaSchema = z.object({
-  name: z.string().min(2),
-  jsonSchema: z.record(z.string(), z.any()), // The actual field definitions
-  organizationId: z.string().optional()
+  name: z.string().min(1, "Name is required"),
+  jsonSchema: z.string().min(1, "JSON Schema is required"), // Receiving as string, will parse
 })
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || !session.user || !session.user.organizationId) {
-    return new NextResponse("Unauthorized", { status: 401 })
-  }
-
   try {
-    const json = await req.json()
-    const body = schemaSchema.parse(json)
+    const session = await getServerSession(authOptions)
 
-    // Ensure orgId matches session (unless SuperAdmin, but let's restrict for now)
-    const orgId = session.user.organizationId
+    if (!session?.user?.organizationId) {
+      return new NextResponse("Unauthorized", { status: 401 })
+    }
+
+    if (session.user.role === "USER") {
+       return new NextResponse("Forbidden", { status: 403 })
+    }
+
+    const body = await req.json()
+    const { name, jsonSchema } = schemaSchema.parse(body)
+
+    let parsedJson
+    try {
+      parsedJson = JSON.parse(jsonSchema)
+    } catch (e) {
+      return new NextResponse("Invalid JSON format", { status: 400 })
+    }
 
     const schema = await prisma.fieldSchema.create({
       data: {
-        name: body.name,
-        jsonSchema: body.jsonSchema as any,
-        organizationId: orgId,
-        createdBy: session.user.id
+        name,
+        jsonSchema: parsedJson,
+        organizationId: session.user.organizationId,
+        createdBy: session.user.id,
       }
     })
 
     return NextResponse.json(schema)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 400 })
+      return new NextResponse("Invalid request data", { status: 422 })
     }
+    console.error("[SCHEMA_CREATE]", error)
     return new NextResponse("Internal Server Error", { status: 500 })
   }
-}
-
-export async function GET(req: Request) {
-  const session = await getServerSession(authOptions)
-
-  if (!session || !session.user || !session.user.organizationId) {
-    return new NextResponse("Unauthorized", { status: 401 })
-  }
-
-  const schemas = await prisma.fieldSchema.findMany({
-    where: {
-      organizationId: session.user.organizationId,
-      isActive: true
-    },
-    orderBy: { updatedAt: 'desc' }
-  })
-
-  return NextResponse.json(schemas)
 }

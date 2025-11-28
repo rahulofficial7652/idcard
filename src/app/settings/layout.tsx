@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth"
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
 import { redirect } from "next/navigation"
 
-export default async function SuperAdminLayout({ children }: { children: React.ReactNode }) {
+export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions)
 
   if (!session?.user) {
@@ -11,7 +11,7 @@ export default async function SuperAdminLayout({ children }: { children: React.R
   }
 
   return (
-    <DashboardLayout role="SUPER_ADMIN" user={session.user}>
+    <DashboardLayout role={session.user.role} user={session.user}>
       {children}
     </DashboardLayout>
   )

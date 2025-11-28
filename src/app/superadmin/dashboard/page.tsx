@@ -2,8 +2,9 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { UserRole } from "@prisma/client"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Users, Building2, ShieldAlert } from "lucide-react"
+import { StatsCard } from "@/components/dashboard/StatsCard"
+import { OverviewLineChart, OverviewBarChart } from "@/components/dashboard/Charts"
+import { Users, Building2, ShieldAlert, CreditCard } from "lucide-react"
 
 export default async function SuperAdminDashboard() {
   const session = await getServerSession(authOptions)
@@ -18,46 +19,75 @@ export default async function SuperAdminDashboard() {
     prisma.auditLog.count()
   ])
 
+  // Mock data for charts - in a real app this would come from the DB
+  const growthData = [
+    { name: "Jan", total: 12 },
+    { name: "Feb", total: 18 },
+    { name: "Mar", total: 25 },
+    { name: "Apr", total: 35 },
+    { name: "May", total: 45 },
+    { name: "Jun", total: 58 },
+  ]
+
+  const activityData = [
+    { name: "Mon", total: 145 },
+    { name: "Tue", total: 230 },
+    { name: "Wed", total: 180 },
+    { name: "Thu", total: 210 },
+    { name: "Fri", total: 290 },
+    { name: "Sat", total: 120 },
+    { name: "Sun", total: 90 },
+  ]
+
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
+      <div>
         <h1 className="text-3xl font-bold tracking-tight">Super Admin Dashboard</h1>
-        <div className="text-sm text-muted-foreground">
-          System Overview
-        </div>
+        <p className="text-muted-foreground">System-wide analytics and overview.</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Organizations</CardTitle>
-            <Building2 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{orgCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{userCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Audit Logs</CardTitle>
-            <ShieldAlert className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{auditCount}</div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <StatsCard
+          title="Total Organizations"
+          value={orgCount.toString()}
+          icon={Building2}
+          description="Active organizations"
+          trend={{ value: 12, label: "from last month", positive: true }}
+        />
+        <StatsCard
+          title="Total Users"
+          value={userCount.toString()}
+          icon={Users}
+          description="Registered users"
+          trend={{ value: 8, label: "from last month", positive: true }}
+        />
+        <StatsCard
+          title="Audit Logs"
+          value={auditCount.toString()}
+          icon={ShieldAlert}
+          description="System activities"
+        />
+        <StatsCard
+          title="Total ID Cards"
+          value="1,234"
+          icon={CreditCard}
+          description="Generated across system"
+          trend={{ value: 24, label: "from last month", positive: true }}
+        />
       </div>
-      
-      {/* Add more super admin controls here, e.g., list of all orgs */}
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <OverviewLineChart 
+          title="User Growth" 
+          data={growthData} 
+          className="col-span-4" 
+        />
+        <OverviewBarChart 
+          title="Weekly Activity" 
+          data={activityData} 
+          className="col-span-3" 
+        />
+      </div>
     </div>
   )
 }
