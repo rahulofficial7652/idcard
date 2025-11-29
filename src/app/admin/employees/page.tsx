@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/db"
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Table,
   TableBody,
@@ -9,75 +9,98 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 
-export default async function EmployeesPage() {
-  const session = await getServerSession(authOptions)
-  
-  if (!session?.user?.organizationId) {
-    return <div>Unauthorized</div>
-  }
-
-  const employees = await prisma.user.findMany({
-    where: {
-      organizationId: session.user.organizationId
+export default function EmployeesPage() {
+  const employees = [
+    {
+      id: "EMP-001",
+      name: "Amit Sharma",
+      role: "Student",
+      class: "10-B",
+      photo: "/avatars/01.png",
+      status: "Photo Uploaded",
     },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  })
+    {
+      id: "EMP-002",
+      name: "Priya Gupta",
+      role: "Teacher",
+      class: "-",
+      photo: "/avatars/02.png",
+      status: "Pending",
+    },
+  ]
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 p-4 md:p-6">
+
+      {/* HEADER ROW */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
-          <p className="text-muted-foreground">Manage your organization's members.</p>
+          <h2 className="text-2xl font-bold tracking-tight">Employees</h2>
+          <p className="text-muted-foreground text-sm">
+            Manage all students & staff added to your organization.
+          </p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
+
+        <Button className="gap-2">
+          <Plus className="h-4 w-4" />
           Add Employee
         </Button>
       </div>
 
-      <div className="rounded-md border bg-card">
+      {/* SEARCH BAR */}
+      <div className="relative max-w-sm">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          placeholder="Search employees..."
+          className="pl-9"
+        />
+      </div>
+
+      {/* EMPLOYEE TABLE */}
+      <div className="rounded-xl border bg-card p-4 shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Employee</TableHead>
+              <TableHead className="w-[70px]">Photo</TableHead>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
               <TableHead>Role</TableHead>
-              <TableHead>Joined</TableHead>
+              <TableHead>Class</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
-            {employees.map((employee) => (
-              <TableRow key={employee.id}>
-                <TableCell className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={employee.image || ""} />
-                    <AvatarFallback>{employee.name?.[0] || "U"}</AvatarFallback>
+            {employees.map((emp) => (
+              <TableRow key={emp.id}>
+                <TableCell>
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={emp.photo} />
+                    <AvatarFallback>NA</AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{employee.name}</span>
-                    <span className="text-xs text-muted-foreground">{employee.email}</span>
-                  </div>
                 </TableCell>
+
+                <TableCell className="font-medium">{emp.id}</TableCell>
+                <TableCell>{emp.name}</TableCell>
+                <TableCell>{emp.role}</TableCell>
+                <TableCell>{emp.class}</TableCell>
                 <TableCell>
-                  <Badge variant="secondary">{employee.role}</Badge>
-                </TableCell>
-                <TableCell>{new Date(employee.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                    Active
-                  </Badge>
+                  <span
+                    className={`text-sm font-medium ${
+                      emp.status === "Photo Uploaded"
+                        ? "text-green-600"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {emp.status}
+                  </span>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
+
         </Table>
       </div>
     </div>

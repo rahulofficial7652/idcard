@@ -1,87 +1,148 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Book, LifeBuoy, Mail } from "lucide-react"
+"use client";
+
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Search, Mail, MessageSquare, PlayCircle, BookOpen, CheckCircle } from "lucide-react";
 
 export default function HelpPage() {
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Help & Documentation</h1>
-        <p className="text-muted-foreground">Guides and support for using ID Card Pro.</p>
+    <div className="p-4 md:p-6 space-y-10">
+
+      {/* PAGE HEADER */}
+      <div className="text-center space-y-3">
+        <h1 className="text-4xl font-semibold tracking-tight">How can we help you?</h1>
+        <p className="text-muted-foreground text-sm">
+          Find answers, explore tutorials, or contact support.
+        </p>
+
+        {/* SEARCH BAR */}
+        <div className="relative max-w-xl mx-auto mt-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-5 w-5" />
+          <Input
+            className="pl-11 py-6 text-lg"
+            placeholder="Search for help articles..."
+          />
+        </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Documentation</CardTitle>
-            <Book className="h-4 w-4 text-muted-foreground" />
+      {/* HELP CATEGORIES */}
+      <div className="grid gap-6 md:grid-cols-3">
+
+        <Card className="shadow-sm">
+          <CardHeader>
+            <BookOpen className="h-6 w-6 text-primary mb-2" />
+            <CardTitle>Getting Started</CardTitle>
+            <CardDescription>Learn the basics of using the system</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Guides</div>
-            <p className="text-xs text-muted-foreground">Read our detailed guides</p>
-          </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Support</CardTitle>
-            <LifeBuoy className="h-4 w-4 text-muted-foreground" />
+
+        <Card className="shadow-sm">
+          <CardHeader>
+            <PlayCircle className="h-6 w-6 text-primary mb-2" />
+            <CardTitle>Tutorials</CardTitle>
+            <CardDescription>Video guides and walkthroughs</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">Contact</div>
-            <p className="text-xs text-muted-foreground">Get help from our team</p>
-          </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Email</CardTitle>
-            <Mail className="h-4 w-4 text-muted-foreground" />
+
+        <Card className="shadow-sm">
+          <CardHeader>
+            <MessageSquare className="h-6 w-6 text-primary mb-2" />
+            <CardTitle>Contact Support</CardTitle>
+            <CardDescription>Reach us for technical issues</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">support@idcard.pro</div>
-            <p className="text-xs text-muted-foreground">Direct email support</p>
-          </CardContent>
         </Card>
+
       </div>
 
-      <Card>
+      {/* FAQ SECTION */}
+      <Card className="shadow-sm">
         <CardHeader>
-          <CardTitle>Frequently Asked Questions</CardTitle>
-          <CardDescription>Quick answers to common questions.</CardDescription>
+          <CardTitle className="text-lg">Frequently Asked Questions</CardTitle>
+          <CardDescription>Find quick answers to common questions</CardDescription>
         </CardHeader>
+
         <CardContent>
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="item-1">
-              <AccordionTrigger>How do I create a new ID card?</AccordionTrigger>
+          <Accordion type="single" collapsible className="w-full space-y-3">
+
+            <AccordionItem value="faq-1">
+              <AccordionTrigger>How to create a new ID card template?</AccordionTrigger>
               <AccordionContent>
-                Go to the <strong>ID Cards</strong> section and click on "Create New Template". Use the drag-and-drop editor to design your card, then save it.
+                Go to <b>Fields</b> → Add new field → Save template.  
+                You can preview it under the ID card preview section.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-2">
-              <AccordionTrigger>Can I upload my own logo?</AccordionTrigger>
+
+            <AccordionItem value="faq-2">
+              <AccordionTrigger>How to add a new employee?</AccordionTrigger>
               <AccordionContent>
-                Yes! In the designer, use the "Image" tool to add an image placeholder. When generating a card, the employee's image will be used, or you can add a static image in the template.
+                Navigate to <b>Employees</b> → Add employee.  
+                Fill required details and save.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-3">
-              <AccordionTrigger>How do I add employees?</AccordionTrigger>
+
+            <AccordionItem value="faq-3">
+              <AccordionTrigger>Why can’t photos upload?</AccordionTrigger>
               <AccordionContent>
-                Navigate to the <strong>Employees</strong> page and click "Add Employee". You can enter their details manually.
+                Ensure the file is under 5MB and in JPG/PNG format.  
+                Also check your internet connectivity.
               </AccordionContent>
             </AccordionItem>
-            <AccordionItem value="item-4">
-              <AccordionTrigger>Is my data secure?</AccordionTrigger>
+
+            <AccordionItem value="faq-4">
+              <AccordionTrigger>How to change organization branding?</AccordionTrigger>
               <AccordionContent>
-                Absolutely. We use industry-standard encryption and security practices to ensure your organization's data is safe.
+                Go to <b>Organization Management</b> → Branding.  
+                Update logo and color scheme.
               </AccordionContent>
             </AccordionItem>
+
           </Accordion>
         </CardContent>
       </Card>
+
+      {/* SYSTEM STATUS + SUPPORT */}
+      <div className="grid gap-6 md:grid-cols-2">
+
+        {/* System Status */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">System Status</CardTitle>
+            <CardDescription>Real-time system availability</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-2 text-green-600">
+              <CheckCircle className="h-5 w-5" />
+              <p>All systems are operational</p>
+            </div>
+            <p className="text-muted-foreground text-sm">
+              API, database, and services running normally.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Contact Support */}
+        <Card className="shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg">Need help?</CardTitle>
+            <CardDescription>Contact our support team</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+
+            <Button className="w-full gap-2">
+              <Mail className="h-4 w-4" /> Email Support
+            </Button>
+
+            <Button variant="secondary" className="w-full gap-2">
+              <MessageSquare className="h-4 w-4" /> Chat Support
+            </Button>
+
+          </CardContent>
+        </Card>
+
+      </div>
+
     </div>
-  )
+  );
 }

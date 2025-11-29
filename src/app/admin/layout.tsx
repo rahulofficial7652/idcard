@@ -1,18 +1,23 @@
-import { getServerSession } from "next-auth"
-import { authOptions } from "@/lib/auth"
-import { DashboardLayout } from "@/components/dashboard/DashboardLayout"
-import { redirect } from "next/navigation"
+import { ThemeProvider } from "@/components/theme-provider"
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { AdminHeader } from "@/components/admin/admin-header"
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await getServerSession(authOptions)
-
-  if (!session?.user) {
-    redirect("/login")
-  }
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <DashboardLayout role="ADMIN" user={session.user}>
-      {children}
-    </DashboardLayout>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <SidebarProvider>
+        <AppSidebar variant="inset" />
+        <SidebarInset>
+          <AdminHeader />
+          {children}
+        </SidebarInset>
+      </SidebarProvider>
+    </ThemeProvider>
   )
 }

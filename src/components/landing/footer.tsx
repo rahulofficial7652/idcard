@@ -20,7 +20,7 @@ export default function Footer() {
             <li><Link href="/features">Features</Link></li>
             <li><Link href="/pricing">Pricing</Link></li>
             <li><Link href="/templates">Templates</Link></li>
-            <li><Link href="/dashboard-preview">Dashboard Preview</Link></li>
+            <li><Link href="/admin">Dashboard Preview</Link></li>
           </ul>
         </div>
 

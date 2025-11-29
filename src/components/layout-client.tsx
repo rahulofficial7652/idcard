@@ -7,15 +7,13 @@ import Footer from "@/components/landing/footer";
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // All routes where navbar/footer should disappear
-  const hideRoutes = [
-    "/login",
-    "/register",
-    "/super-admin-login",
-    "/admin-login",
-  ];
-
-  const hide = hideRoutes.includes(pathname);
+  // Hide navbar/footer on admin & other specific routes
+  const hide =
+    pathname.startsWith("/admin") ||
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/super-admin-login" ||
+    pathname === "/dashboard";
 
   return (
     <>
