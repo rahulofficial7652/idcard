@@ -1,68 +1,120 @@
-"use client"
-
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
-import { ShieldCheck, Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { useState } from "react"
+"use client";
+import { SheetClose } from "@/components/ui/sheet";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Menu } from "lucide-react";
+import { ModeToggle } from "@/components/themetoggler";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
-
+  const [toggle, setToggler] = useState(true);
   return (
-    <header className="border-b bg-background sticky top-0 z-50">
-      <div className="container mx-auto px-4 lg:px-6 h-16 flex items-center">
-        <Link className="flex items-center justify-center" href="#">
-          <ShieldCheck className="h-6 w-6 text-primary" />
-          <span className="ml-2 text-lg font-bold">ID Card Pro</span>
+    <header className="w-full border-b sticky top-0 z-50 bg-background/50 backdrop-blur">
+      <div className="max-w-7xl mx-auto h-16 px-4 flex items-center justify-between">
+        {/* Left: Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-xl">🛡️</span>
+          <span className="font-semibold text-lg">ID Card Pro</span>
         </Link>
-        <nav className="ml-auto hidden md:flex gap-4 sm:gap-6 items-center">
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
+
+        {/* Center Menu — Desktop Only */}
+        <nav className="hidden md:flex items-center gap-8 text-sm">
+          <Link href="/features" className="hover:text-primary transition">
             Features
           </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
+          <Link href="/pricing" className="hover:text-primary transition">
             Pricing
           </Link>
-          <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
+          <Link href="/about" className="hover:text-primary transition">
+            About Us
+          </Link>
+          <Link href="/contact" className="hover:text-primary transition">
             Contact
           </Link>
-          <div className="flex gap-2 ml-4 items-center">
-            <ModeToggle />
-            <Button variant="ghost" asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/register">Get Started</Link>
-            </Button>
-          </div>
         </nav>
-        <div className="ml-auto md:hidden flex items-center gap-2">
+
+        {/* Right side for Desktop */}
+        <div className="hidden md:flex items-center gap-5">
           <ModeToggle />
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+
+          <Link
+            href="/login"
+            className="text-sm hover:text-primary bg-secondary px-4 py-2 rounded-lg transition"
+          >
+            Sign In
+          </Link>
+
+          <Button asChild className="rounded-lg px-6">
+            <Link href="/signup">Get Started</Link>
+          </Button>
+        </div>
+
+        {/* MOBILE — Hamburger + Theme */}
+        <div className="md:hidden flex items-center gap-3">
+          <ModeToggle />
+
+          <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
+              <Button variant="outline" size="icon">
+                <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            {/* wrap sheet content in container */}
-            <SheetContent side="right">
-              <div className="flex flex-col gap-4 mx-4 mt-12">
-                <Link className="text-base font-medium hover:text-primary border-2 rounded-[5px] px-2 py-1" href="#" onClick={() => setIsOpen(false)}>
-                  Features
-                </Link>
-                <Link className="text-base font-medium hover:text-primary border-2 rounded-[5px] px-2 py-1" href="#" onClick={() => setIsOpen(false)}>
-                  Pricing
-                </Link>
-                <Link className="text-base font-medium hover:text-primary border-2 rounded-[5px] px-2 py-1" href="#" onClick={() => setIsOpen(false)}>
-                  Contact
-                </Link>
-                <div className="flex flex-col gap-2 mt-12">
-                  <Button variant="outline" asChild onClick={() => setIsOpen(false)}>
-                    <Link href="/login">Sign In</Link>
-                  </Button>
-                  <Button asChild onClick={() => setIsOpen(false)}>
+
+            {/* Mobile Drawer */}
+            <SheetContent side="left" className="w-64 p-6">
+              <div className="flex flex-col gap-6">
+                {/* Mobile Logo */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xl">🛡️</span>
+                  <span className="font-semibold text-lg">ID Card Pro</span>
+                </div>
+
+                {/* Mobile Navigation */}
+                <nav className="flex flex-col gap-4 text-base">
+                  <SheetClose asChild>
+                    <Link
+                      href="/features"
+                      className="hover:text-primary transition"
+                    >
+                      Features
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      href="/pricing"
+                      className="hover:text-primary transition"
+                    >
+                      Pricing
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      href="/about"
+                      className="hover:text-primary transition"
+                    >
+                      About Us
+                    </Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link
+                      href="/contact"
+                      className="hover:text-primary transition"
+                    >
+                      Contact
+                    </Link>
+                  </SheetClose>
+                </nav>
+
+                {/* Mobile Actions */}
+                <div className="flex flex-col gap-3 mt-4">
+                  <Link
+                    href="/login"
+                    className="text-center bg-secondary py-2 rounded-lg hover:bg-secondary/80"
+                  >
+                    Sign In
+                  </Link>
+                  <Button asChild className="rounded-lg w-full">
                     <Link href="/register">Get Started</Link>
                   </Button>
                 </div>
@@ -72,5 +124,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }
