@@ -17,14 +17,14 @@ import {
   IconFileDescription,
 } from "@tabler/icons-react"
 
-import { NavDocuments } from "@/components/nav-documents"
-import { NavMain } from "@/components/nav-main"
-import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { AdminNavDocuments } from "@/components/admin/admin-nav-documents"
+import { AdminNavMain } from "@/components/admin/admin-nav-main"
+import { AdminNavSecondary } from "@/components/admin/admin-nav-secondary"
+import { AdminNavUser } from "@/components/admin/admin-nav-user"
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  SidebarFooter,    
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -121,10 +121,10 @@ const data = {
     },
   ],
  
-  
+ 
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AdminAppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -139,14 +139,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.data} />
-        <NavDocuments items={data.management} />
+        <AdminNavMain items={data.navMain} />
+        <AdminNavDocuments items={data.data} />
+        <AdminNavDocuments items={data.management} />
      
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <AdminNavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <AdminNavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   )

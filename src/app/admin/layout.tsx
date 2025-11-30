@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
+import { AdminAppSidebar } from "@/components/admin/admin-app-sidebar"
 import { AdminHeader } from "@/components/admin/admin-header"
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       disableTransitionOnChange
     >
       <SidebarProvider>
-        <AppSidebar variant="inset" />
+        <AdminAppSidebar variant="inset" />
         <SidebarInset>
           <AdminHeader />
           {children}

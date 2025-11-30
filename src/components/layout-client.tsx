@@ -12,7 +12,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/admin") ||
     pathname === "/login" ||
     pathname === "/register" ||
-    pathname === "/super-admin-login" ||
+    pathname === "/super-admin" ||
     pathname === "/dashboard";
 
   return (

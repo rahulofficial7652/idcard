@@ -13,7 +13,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 
-export function NavSecondary({
+export function AdminNavSecondary({
   items,
   ...props
 }: {
